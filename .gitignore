@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# Sensitive — NEVER commit
+.env
+*.env
+*.p8
+*.pem
+*.key
+keys/
+
+# Runtime — stay local, not in GitHub
+checkpoints/*
+!checkpoints/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# GitHub Actions runner files
+.runner
+.credentials
+.env.runner

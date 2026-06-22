@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Daily Sales Report",
+    "sheet_url": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_SPREADSHEET_ID/edit",
+    "tab_name": "Sales",
+    "range": "A:Z",
+    "snowflake_query": "SELECT * FROM CSPL_C2B_DB.PROD.YOUR_TABLE WHERE DATE_COL = CURRENT_DATE - 1",
+    "refresh_time": "09:30",
+    "active": false,
+    "_note": "Set active:true once sheet_url, tab_name, and snowflake_query are filled in."
+  },
+  {
+    "name": "Weekly Pipeline",
+    "sheet_url": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_SPREADSHEET_ID/edit",
+    "tab_name": "Pipeline",
+    "range": "A:AF",
+    "snowflake_query": "SELECT * FROM CSPL_C2B_DB.PROD.ANOTHER_TABLE",
+    "refresh_time": "11:00",
+    "active": false,
+    "_note": "Add more mappings by duplicating this block and changing the fields."
+  }
+]

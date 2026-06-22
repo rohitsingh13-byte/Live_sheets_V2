@@ -1,0 +1,55 @@
+Live Sheets V2 — Self-Hosted GitHub Actions Runner Setup
+═══════════════════════════════════════════════════════
+
+Run these steps ONCE. After that the runner starts automatically every time
+Windows boots and your pipeline runs with zero manual intervention.
+
+─── Step 1: Create a new runner on GitHub ─────────────────────────────────────
+1. Go to your GitHub repo → Settings → Actions → Runners → New self-hosted runner
+2. Select: Windows · x64
+3. GitHub will show a set of PowerShell commands. Keep this page open.
+
+─── Step 2: Install the runner on your PC ─────────────────────────────────────
+1. Open PowerShell as Administrator
+2. Run the commands GitHub shows you (starts with: mkdir actions-runner; cd actions-runner ...)
+   They download the runner, register it with your repo.
+3. When prompted for labels, just press Enter (default is fine)
+4. When prompted "Would you like to run the runner as a service?", type: Y
+   This makes it start automatically on every boot.
+
+─── Step 3: Verify ────────────────────────────────────────────────────────────
+1. GitHub → repo → Settings → Actions → Runners
+   You should see your runner with status "Idle" or "Online"
+2. Go to .github/workflows/refresh.yml
+   Confirm: runs-on: self-hosted   (already set)
+
+─── Step 4: Add GitHub Secrets ────────────────────────────────────────────────
+Repo → Settings → Secrets and variables → Actions → New repository secret
+
+  APPSSCRIPT_URL      = <the /exec URL from your Apps Script deployment>
+  APPSSCRIPT_SECRET   = <the WRITE_SECRET value in apps_script_code.js>
+  SLACK_WEBHOOK_URL   = <your Slack Incoming Webhook URL> (optional)
+  SNOWFLAKE_PAT       = <your PAT if IT ever enables it>  (optional)
+
+─── Step 5: Set up wake timers ────────────────────────────────────────────────
+Right-click setup\setup_wake_timer.ps1 → Run with PowerShell (as Administrator)
+This creates 4 Task Scheduler entries that wake the PC from sleep before each run.
+
+─── Step 6: First Snowflake login ─────────────────────────────────────────────
+The first time the pipeline runs, it opens a browser for SSO login.
+After you log in once, the token is cached in Windows Credential Manager.
+Future runs are silent — no browser popup — until the token expires (8–24 hrs).
+
+To trigger the first login right now:
+  python run.py --slot 09:30
+
+─── Behaviour summary ─────────────────────────────────────────────────────────
+PC sleeping → Wake timer fires → PC wakes up → GitHub Actions cron fires
+→ Runner picks up job → Python runs → Snowflake connected → Sheets updated
+→ Slack report sent → PC goes back to sleep
+
+If token expires mid-run:
+  → Completed sheets are saved in checkpoints/
+  → Slack reports which sheets are done and which need a retry
+  → Re-run: python run.py --slot 09:30  (browser opens, you log in, it resumes)
+  → Only the remaining sheets are processed — already-done sheets are skipped
