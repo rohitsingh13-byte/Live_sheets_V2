@@ -65,8 +65,8 @@ def main():
     if len(df) > 0:
         log.info(f'\nSample (first 5 rows):\n{df.head(5).to_string(index=False)}')
 
-    os.makedirs('output', exist_ok=True)
-    out = 'output/test_result.csv'
+    os.makedirs('data', exist_ok=True)
+    out = 'data/test_result.csv'
     df.to_csv(out, index=False)
     log.info(f'Saved -> {out}')
 

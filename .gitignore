@@ -19,6 +19,7 @@ logs/*
 !logs/.gitkeep
 output/*
 !output/.gitkeep
+# data/ is tracked — CSVs committed by the workflow
 
 # OS
 .DS_Store

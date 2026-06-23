@@ -1,6 +1,5 @@
 name: Test Snowflake
 
-# Manual trigger only — use this to verify Snowflake auth before enabling the main pipeline.
 on:
   workflow_dispatch:
 
@@ -24,10 +23,19 @@ jobs:
           SNOWFLAKE_PAT:         ${{ secrets.SNOWFLAKE_PAT }}
         run: python test_snowflake.py
 
+      - name: Commit CSV to repo
+        shell: cmd
+        run: |
+          git config user.email "rohit.singh13@cars24.com"
+          git config user.name "Live Sheets Bot"
+          git add data/test_result.csv
+          git diff --cached --quiet || git commit -m "data: refresh test_result [skip ci]"
+          git push origin main
+
       - name: Upload result CSV
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: snowflake-test-run-${{ github.run_number }}
-          path: output/test_result.csv
+          path: data/test_result.csv
           retention-days: 7
