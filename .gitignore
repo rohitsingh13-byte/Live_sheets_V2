@@ -17,6 +17,8 @@ checkpoints/*
 !checkpoints/.gitkeep
 logs/*
 !logs/.gitkeep
+output/*
+!output/.gitkeep
 
 # OS
 .DS_Store

@@ -11,19 +11,36 @@ ROLE    = 'ROHIT_SINGH13_RL'
 
 def connect():
     """
-    Connect to Snowflake.
+    Connect to Snowflake. Auth priority:
 
-    - On your local PC (self-hosted runner): uses externalbrowser SSO.
-      After the FIRST browser login, the token is cached in Windows Credential
-      Manager via client_store_temporary_credential=True, so all future runs
-      are silent — no browser popup — until the token expires (8–24 hrs).
+    1. SNOWFLAKE_PRIVATE_KEY env var (RSA key-pair) — fully headless, never expires.
+       Set as GitHub Secret. Run setup/generate_snowflake_key.py to generate.
 
-    - If SNOWFLAKE_PAT env var is set (optional IT-enabled feature):
-      uses OAuth PAT instead — fully headless, never opens a browser.
+    2. SNOWFLAKE_PAT env var (OAuth PAT) — headless if IT enables PAT auth.
+
+    3. SSO externalbrowser — opens browser on first run, then silent via
+       Windows Credential Manager cache (client_store_temporary_credential=True).
+       Works for local testing. Not reliable on the runner after long sleep.
     """
     import snowflake.connector
 
-    pat = os.environ.get('SNOWFLAKE_PAT', '').strip()
+    private_key_pem = os.environ.get('SNOWFLAKE_PRIVATE_KEY', '').strip()
+    pat             = os.environ.get('SNOWFLAKE_PAT', '').strip()
+
+    if private_key_pem:
+        log.info('  auth: RSA key-pair (headless)')
+        from cryptography.hazmat.primitives.serialization import (
+            load_pem_private_key, Encoding, PrivateFormat, NoEncryption
+        )
+        pk       = load_pem_private_key(private_key_pem.encode(), password=None)
+        pk_bytes = pk.private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())
+        return snowflake.connector.connect(
+            user=USER,
+            account=ACCOUNT,
+            role=ROLE,
+            private_key=pk_bytes,
+        )
+
     if pat:
         log.info('  auth: PAT (headless)')
         return snowflake.connector.connect(

@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
-def run(slot: str, force: bool = False) -> None:
+def run(slot: str) -> None:
     today = datetime.now(IST).strftime('%Y-%m-%d')
     log.info('═' * 60)
     log.info(f'Live Sheets V2  ·  slot={slot}  ·  {today}')
@@ -40,8 +40,8 @@ def run(slot: str, force: bool = False) -> None:
     # ── Load or create checkpoint ────────────────────────────────────
     checkpoint = ckpt.load(today, slot)
 
-    if checkpoint and checkpoint.get('status') == 'complete' and not force:
-        log.info("Today's run already complete. Use --force to re-run.")
+    if checkpoint and checkpoint.get('status') == 'complete':
+        log.info("Today's run already complete.")
         return
 
     is_resume = False

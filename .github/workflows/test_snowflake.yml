@@ -1,0 +1,33 @@
+name: Test Snowflake
+
+# Manual trigger only — use this to verify Snowflake auth before enabling the main pipeline.
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        shell: pwsh
+        run: python -m pip install -r requirements.txt --quiet
+
+      - name: Run test query
+        shell: pwsh
+        env:
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          SNOWFLAKE_PAT:         ${{ secrets.SNOWFLAKE_PAT }}
+        run: python test_snowflake.py
+
+      - name: Upload result CSV
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snowflake-test-run-${{ github.run_number }}
+          path: output/test_result.csv
+          retention-days: 7

@@ -2,9 +2,8 @@
 Live Sheets V2 — Entry Point
 
 Usage:
-  python run.py                      # auto-detect current IST time slot
-  python run.py --slot 09:30         # run a specific slot
-  python run.py --slot 09:30 --force # re-run even if today already complete
+  python run.py                # auto-detect current IST time slot
+  python run.py --slot 09:30   # run a specific slot
 
 Environment variables (set as GitHub Secrets or in a local .env file):
   APPSSCRIPT_URL      — Apps Script Web App URL
@@ -12,7 +11,6 @@ Environment variables (set as GitHub Secrets or in a local .env file):
   SLACK_WEBHOOK_URL   — (optional) Slack Incoming Webhook URL
   SNOWFLAKE_PAT       — (optional) Snowflake PAT if IT enables it
   SCHEDULE_SLOT       — (optional) overrides --slot; used by GitHub Actions
-  FORCE_RERUN         — (optional) "true" overrides --force; used by GitHub Actions
 """
 
 import argparse
@@ -59,9 +57,7 @@ def main():
     _setup_logging()
 
     parser = argparse.ArgumentParser(description='Live Sheets V2 Pipeline')
-    parser.add_argument('--slot',  default=os.environ.get('SCHEDULE_SLOT', '').strip())
-    parser.add_argument('--force', action='store_true',
-                        default=os.environ.get('FORCE_RERUN', '').lower() == 'true')
+    parser.add_argument('--slot', default=os.environ.get('SCHEDULE_SLOT', '').strip())
     args = parser.parse_args()
 
     slot = args.slot or _detect_slot()
@@ -73,7 +69,7 @@ def main():
         sys.exit(0)
 
     from src.pipeline import run
-    run(slot, force=args.force)
+    run(slot)
 
 
 if __name__ == '__main__':

@@ -24,10 +24,6 @@ on:
         description: 'Time slot to run (e.g. 09:30). Leave blank to auto-detect.'
         required: false
         default: ''
-      force:
-        description: 'Re-run even if today is already complete? (true/false)'
-        required: false
-        default: 'false'
 
 jobs:
   refresh:
@@ -52,5 +48,4 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SNOWFLAKE_PAT:     ${{ secrets.SNOWFLAKE_PAT }}
           SCHEDULE_SLOT:     ${{ github.event.inputs.slot }}
-          FORCE_RERUN:       ${{ github.event.inputs.force }}
         run: python run.py
