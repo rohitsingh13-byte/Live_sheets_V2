@@ -53,11 +53,11 @@ WHERE
 
 
 def main():
-    log.info('Connecting to Snowflake…')
+    log.info('Connecting to Snowflake...')
     conn = connect()
     log.info('Connected!')
 
-    log.info('Running query…')
+    log.info('Running query...')
     df = query(conn, TEST_SQL)
     log.info(f'Result: {len(df):,} rows  x  {len(df.columns)} columns')
     log.info(f'Columns: {list(df.columns)}')
@@ -68,7 +68,7 @@ def main():
     os.makedirs('output', exist_ok=True)
     out = 'output/test_result.csv'
     df.to_csv(out, index=False)
-    log.info(f'\nSaved → {out}')
+    log.info(f'Saved -> {out}')
 
     conn.close()
     log.info('Done.')

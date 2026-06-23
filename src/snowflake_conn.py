@@ -42,12 +42,12 @@ def connect():
         )
 
     if pat:
-        log.info('  auth: PAT (headless)')
+        log.info('  auth: Snowflake PAT (headless)')
         return snowflake.connector.connect(
             user=USER,
             account=ACCOUNT,
             role=ROLE,
-            authenticator='oauth',
+            authenticator='programmatic_access_token',
             token=pat,
         )
 
