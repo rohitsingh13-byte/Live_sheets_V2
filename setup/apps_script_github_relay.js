@@ -47,8 +47,13 @@ function refreshFromGitHub() {
   var sheet = ss.getSheetByName(SHEET);
   if (!sheet) throw new Error('Sheet "' + SHEET + '" not found');
 
-  sheet.clearContents();
-  sheet.getRange(1, 1, rows.length, rows[0].length).setValues(rows);
+  // Clear only the data columns (A:F) — preserves formulas in G, H, I and beyond
+  var numDataCols = rows[0].length;
+  var oldLastRow  = sheet.getLastRow();
+  if (oldLastRow > 0) {
+    sheet.getRange(1, 1, oldLastRow, numDataCols).clearContent();
+  }
+  sheet.getRange(1, 1, rows.length, numDataCols).setValues(rows);
 
   Logger.log('Done: ' + (rows.length - 1) + ' rows written to ' + SHEET);
 }
